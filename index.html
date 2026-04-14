@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Diagnostics</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #eee; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #2d2d2d; padding: 20px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #444; }
+        th { color: #888; font-size: 0.8rem; }
+        td { color: #00ff88; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Device Info</h1>
+    <table id="infoTable"></table>
+</div>
+
+<script>
+    try {
+        const info = {
+            "User Agent": navigator.userAgent,
+            "Platform": navigator.platform,
+            "Resolution": `${window.screen.width} x ${window.screen.height}`,
+            "Language": navigator.language,
+            "Cores": navigator.hardwareConcurrency || "N/A",
+            // Fixed the typo here: Intl (lowercase l)
+            "Timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
+            "Cookies": navigator.cookieEnabled ? "Yes" : "No"
+        };
+
+        const table = document.getElementById('infoTable');
+        
+        let rows = "";
+        for (const [key, value] of Object.entries(info)) {
+            rows += `<tr><th>${key}</th><td>${value}</td></tr>`;
+        }
+        table.innerHTML = rows;
+
+        console.log("Diagnostics rendered successfully.");
+    } catch (error) {
+        console.error("Script failed:", error);
+        document.body.innerHTML += `<p style="color:red">Error: ${error.message}</p>`;
+    }
+</script>
+
+</body>
+</html>
