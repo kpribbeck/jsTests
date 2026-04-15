@@ -1,156 +1,1094 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TV Signage Engine</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>TV Signage Engine ES5</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
-        
-        /* Layout Containers */
-        #screen-root { 
-            width: 100%; 
-            height: 100%; 
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-
-        /* The Error Overlay: Hidden by default */
-        #error-display {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(200, 0, 0, 0.9);
-            color: white;
-            padding: 40px;
-            z-index: 9999;
+        * {
             box-sizing: border-box;
-            overflow-y: auto;
+            -webkit-box-sizing: border-box;
         }
 
-        /* Each pane takes 1/3 of the space */
-        .pane { 
-            float: left; 
-            width: 33.33%; 
-            height: 100%; 
-            box-sizing: border-box; 
-        }
-        .pane:last-child { border-right: none; }
-
-        /* Content scaling */
-        iframe, img, video { width: 100%; height: 100%; display: block; border: none; }
-        img, video { object-fit: cover; } /* Ensures video fills the column without black bars */
-
-        .main-split { 
-            width: 100%; 
-            height: 90%; /* Leave room for footer */
-        }
-        .left-pane { flex: 1; font-size: 1.5rem; line-height: 1.6; background: white; height: 100%; }
-        .left-pane iframe { width: 100%; height: 100%; border: none; }
-        .right-pane { width: 100%; height: 100%; flex: 1; }
-        .right-pane img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Looping Ticker Footer */
-        .footer-ticker { 
-            clear: both; /* Stop the floats */
-            width: 100%; 
-            height: 60px; 
+        #app-root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
         }
 
-        .ticker-content {
-            display: inline-block;
-            padding-left: 100%; /* Start the text off-screen to the right */
-            animation: ticker-loop linear infinite;
+        .layout {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 56px;
+            overflow: hidden;
         }
 
-        @keyframes ticker-loop {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
+        .column {
+            position: relative;
+            float: left;
+            width: 33.3333%;
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid #1f2937;
+            background: #111;
+        }
+
+        .column.last {
+            border-right: 0;
+        }
+
+        .left-panel {
+            background: #0f1620;
+            color: #eef3ff;
+        }
+
+        .left-inner {
+            padding: 36px 24px 24px;
+        }
+
+        .brand {
+            margin: 0 0 10px;
+            text-align: center;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 52px;
+            line-height: 1;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .brand-sub {
+            margin: 0;
+            text-align: center;
+            font-size: 18px;
+            line-height: 1.4;
+            color: #cbd5e1;
+        }
+
+        .info-box {
+            margin-top: 24px;
+            padding: 16px;
+            background: #111a25;
+            border: 1px solid #2b3f57;
+        }
+
+        .info-box h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            line-height: 1.3;
+            color: #8db8ff;
+        }
+
+        .info-box p {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.55;
+            color: #d8e2f3;
+        }
+
+        .lang-grid {
+            width: 100%;
+            margin-top: 22px;
+            border-collapse: collapse;
+        }
+
+        .lang-grid td {
+            width: 33.3333%;
+            padding: 0 8px 18px 0;
+            vertical-align: top;
+        }
+
+        .lang-name {
+            display: block;
+            margin: 0 0 4px;
+            color: #8db8ff;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .lang-meta {
+            display: block;
+            color: #d8e2f3;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .checklist {
+            margin-top: 22px;
+            padding: 14px 16px;
+            border-left: 4px solid #d40000;
+            background: #0b1118;
+            color: #e5eefc;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .checklist strong {
+            display: block;
+            margin-bottom: 6px;
+            color: #ffffff;
+            font-size: 15px;
+        }
+
+        .center-panel {
+            background: #0b1220;
+        }
+
+        .scene-wrap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        #scene-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: #0b1220;
+        }
+
+        .center-label {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1.2;
+            letter-spacing: 1px;
+        }
+
+        .center-caption {
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 18px;
+            text-align: center;
+            color: #d7e4ff;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .right-panel {
+            background: #243a52;
+        }
+
+        .right-panel img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            border: 0;
+        }
+
+        .center-panel video {
+            position: absolute;
+            display: block;
+            border: 0;
+            background: #111;
+        }
+
+        .right-tag {
+            position: absolute;
+            left: 16px;
+            bottom: 68px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.55);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: bold;
+            line-height: 1.2;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .right-note {
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 16px;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.45);
+            color: #ffffff;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .footer {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 56px;
+            overflow: hidden;
+            background: #d40000;
+            color: #ffffff;
+            border-top: 1px solid #570000;
+        }
+
+        .footer-inner {
+            position: relative;
+            width: 100%;
+            height: 56px;
+            overflow: hidden;
+        }
+
+        .footer-track {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            white-space: nowrap;
+            line-height: 56px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.82);
+            padding: 18px;
+        }
+
+        .modal-overlay.visible {
+            display: block;
+        }
+
+        .modal-dialog {
+            max-width: 760px;
+            margin: 8% auto 0;
+            padding: 24px;
+            background: #111;
+            color: #ffffff;
+            border: 2px solid #cc0000;
+            max-height: 80%;
+            overflow: auto;
+        }
+
+        .modal-dialog h1 {
+            margin: 0 0 14px;
+            font-size: 28px;
+            line-height: 1.2;
+        }
+
+        .modal-dialog p {
+            margin: 0 0 18px;
+            padding: 14px;
+            background: #330000;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .modal-actions {
+            text-align: right;
+        }
+
+        .modal-actions button {
+            margin-left: 8px;
+            padding: 10px 14px;
+            border: 0;
+            background: #ffffff;
+            color: #111111;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .fallback-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            padding: 24px;
+            color: #ffffff;
+            background: #0b1220;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .fallback-canvas strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #8db8ff;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
+    <div id="app-root">
+        <div class="layout">
+            <div class="column left-panel">
+                <div class="left-inner">
+                    <div class="brand">LOCAL HUB</div>
+                    <p class="brand-sub">ES5 only, no iframe, no remote media</p>
 
-    <div id="error-display">
-        <h1>⚠️ TV Engine Error</h1>
-        <p id="error-msg" style="font-family: monospace; font-size: 1.5rem; background: #300; padding: 20px;"></p>
-        <button onclick="location.reload()" style="padding: 15px; font-size: 1.2rem;">Reload Page</button>
+                    <div class="info-box">
+                        <h2>Stable content for old browsers</h2>
+                        <p>
+                            This page is fully self-contained. The image, animation, and footer are generated locally,
+                            so Chrome 25 and similar browsers do not depend on external URLs.
+                        </p>
+                    </div>
+
+                    <table class="lang-grid" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td>
+                                <span class="lang-name">English</span>
+                                <span class="lang-meta">Local content<br>ready for screens</span>
+                            </td>
+                            <td>
+                                <span class="lang-name">Espanol</span>
+                                <span class="lang-meta">Safe layout<br>for old WebViews</span>
+                            </td>
+                            <td>
+                                <span class="lang-name">Portuguese</span>
+                                <span class="lang-meta">Simple markup<br>and ES5 scripts</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="lang-name">French</span>
+                                <span class="lang-meta">No external iframe<br>or cross-origin load</span>
+                            </td>
+                            <td>
+                                <span class="lang-name">German</span>
+                                <span class="lang-meta">Fallbacks stay visible<br>even if JS is limited</span>
+                            </td>
+                            <td>
+                                <span class="lang-name">Italian</span>
+                                <span class="lang-meta">Compatible with<br>older Chrome builds</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="checklist">
+                        <strong>Compatibility rules</strong>
+                        1. ES5 syntax only.<br>
+                        2. No arrow functions or block-scoped declarations.<br>
+                        3. No remote iframe, no remote video, no remote image.<br>
+                        4. Errors open a popup on screen.
+                    </div>
+                </div>
+            </div>
+
+            <div class="column center-panel">
+                <div class="scene-wrap">
+                    <canvas id="scene-canvas"></canvas>
+                    <div class="fallback-canvas" id="scene-fallback">
+                        <strong>Canvas fallback</strong>
+                        This browser does not support canvas. The page is still usable, but the live animation is disabled.
+                    </div>
+                    <div class="center-label">LIVE LOOP ES5</div>
+                    <div class="center-caption">Local animation generated with plain JavaScript.</div>
+                </div>
+            </div>
+
+            <div class="column right-panel last">
+                <img id="poster-image" alt="Local poster image">
+                <div class="right-tag">LOCAL IMAGE</div>
+                <div class="right-note">
+                    This image is generated locally with SVG data, so it should not disappear when the network is limited.
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-inner">
+                <div id="footer-track" class="footer-track"></div>
+            </div>
+        </div>
     </div>
 
-    <div id="screen-root"></div>
+    <div id="error-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="error-modal-title">
+            <h1 id="error-modal-title">TV Engine Error</h1>
+            <p id="error-modal-message"></p>
+            <div class="modal-actions">
+                <button type="button" id="error-close">Close</button>
+                <button type="button" id="error-reload">Reload</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        var errorDisplay = document.getElementById('error-display');
-        var errorMsg = document.getElementById('error-msg');
+        var canvas = document.getElementById('scene-canvas');
+        var canvasFallback = document.getElementById('scene-fallback');
+        var posterImage = document.getElementById('poster-image');
+        var footerTrack = document.getElementById('footer-track');
+        var errorModal = document.getElementById('error-modal');
+        var errorMessage = document.getElementById('error-modal-message');
+        var errorClose = document.getElementById('error-close');
+        var errorReload = document.getElementById('error-reload');
+        var canvasContext = null;
+        var frame = 0;
+        var tickerSpan = null;
+        var tickerX = 0;
+        var tickerWidth = 0;
+        var tickerView = 0;
+        var tickerTimer = null;
+        var canvasTimer = null;
+        var activeVideo = null;
+        var activeVideoPanel = null;
 
-        // 1. GLOBAL ERROR CATCHER
-        // This catches syntax errors or failed network requests
-        window.onerror = function(message, source, lineno, colno, error) {
-            showError('Global Error: ' + message + 'at line ' + lineno);
+        function setText(node, value) {
+            if (!node) {
+                return;
+            }
+
+            if (typeof node.textContent !== 'undefined') {
+                node.textContent = value;
+            } else {
+                node.innerText = value;
+            }
+        }
+
+        function clearNode(node) {
+            while (node && node.firstChild) {
+                node.removeChild(node.firstChild);
+            }
+        }
+
+        function getFirstByClass(className) {
+            var list = document.getElementsByClassName ? document.getElementsByClassName(className) : null;
+
+            if (list && list.length) {
+                return list[0];
+            }
+
+            return null;
+        }
+
+        function createPosterDataUrl() {
+            var svg = '';
+
+            svg += '<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">';
+            svg += '<defs>';
+            svg += '<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">';
+            svg += '<stop offset="0%" stop-color="#77b7ff"/>';
+            svg += '<stop offset="48%" stop-color="#ffd7a0"/>';
+            svg += '<stop offset="100%" stop-color="#2a2449"/>';
+            svg += '</linearGradient>';
+            svg += '<linearGradient id="land" x1="0" y1="0" x2="0" y2="1">';
+            svg += '<stop offset="0%" stop-color="#4eab5b"/>';
+            svg += '<stop offset="100%" stop-color="#0d5138"/>';
+            svg += '</linearGradient>';
+            svg += '<linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">';
+            svg += '<stop offset="0%" stop-color="#ffffff"/>';
+            svg += '<stop offset="100%" stop-color="#ffe28b"/>';
+            svg += '</linearGradient>';
+            svg += '</defs>';
+            svg += '<rect width="1080" height="1920" fill="#0b1020"/>';
+            svg += '<rect width="1080" height="1170" fill="url(#sky)"/>';
+            svg += '<circle cx="842" cy="288" r="214" fill="url(#glow)" opacity="0.92"/>';
+            svg += '<path d="M0 1182 C180 1060 340 1020 540 1062 C720 1100 860 1170 1080 1042 L1080 1920 L0 1920 Z" fill="url(#land)"/>';
+            svg += '<path d="M0 1108 C160 980 340 928 540 964 C760 1000 900 1090 1080 984" fill="none" stroke="#b9f6b4" stroke-width="18" stroke-linecap="round" opacity="0.30"/>';
+            svg += '<circle cx="244" cy="1410" r="152" fill="#1e6940" opacity="0.66"/>';
+            svg += '<circle cx="754" cy="1398" r="194" fill="#26714b" opacity="0.66"/>';
+            svg += '<rect x="122" y="1318" width="836" height="286" rx="28" ry="28" fill="#000000" opacity="0.34"/>';
+            svg += '<text x="540" y="1436" text-anchor="middle" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="102" font-weight="700">TV IMAGE</text>';
+            svg += '<text x="540" y="1500" text-anchor="middle" fill="#ffe18a" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">LOCAL SVG FALLBACK</text>';
+            svg += '<text x="540" y="1570" text-anchor="middle" fill="#d7e4ff" font-family="Arial, Helvetica, sans-serif" font-size="26">No remote links needed</text>';
+            svg += '</svg>';
+
+            return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+        }
+
+        function showError(message) {
+            setText(errorMessage, message);
+            errorModal.className = 'modal-overlay visible';
+            errorModal.setAttribute('aria-hidden', 'false');
+            if (errorClose && errorClose.focus) {
+                errorClose.focus();
+            }
+            if (errorModal && typeof errorModal.scrollTop !== 'undefined') {
+                errorModal.scrollTop = 0;
+            }
+        }
+
+        function showDetailedError(title, message, source, lineNumber, columnNumber, error) {
+            var details = '';
+
+            if (title) {
+                details += title + '\n';
+            }
+
+            if (message) {
+                details += message + '\n';
+            }
+
+            if (source) {
+                details += 'Source: ' + source + '\n';
+            }
+
+            if (typeof lineNumber !== 'undefined' && lineNumber !== null) {
+                details += 'Line: ' + lineNumber;
+                if (typeof columnNumber !== 'undefined' && columnNumber !== null) {
+                    details += ', Column: ' + columnNumber;
+                }
+                details += '\n';
+            }
+
+            if (error && error.stack) {
+                details += '\nStack:\n' + error.stack;
+            }
+
+            showError(details);
+        }
+
+        function createLocalFallbackMessage(title, message) {
+            var box = document.createElement('div');
+            var inner = document.createElement('div');
+
+            box.style.position = 'absolute';
+            box.style.top = '0';
+            box.style.left = '0';
+            box.style.right = '0';
+            box.style.bottom = '0';
+            box.style.display = 'table';
+            box.style.width = '100%';
+            box.style.height = '100%';
+            box.style.padding = '20px';
+            box.style.background = '#0f172a';
+            box.style.color = '#ffffff';
+
+            inner.style.display = 'table-cell';
+            inner.style.verticalAlign = 'middle';
+            inner.style.textAlign = 'center';
+            inner.style.fontSize = '18px';
+            inner.style.lineHeight = '1.5';
+            inner.style.padding = '20px';
+
+            if (title) {
+                setText(inner, title + '\n' + (message || ''));
+            } else {
+                setText(inner, message || 'Content unavailable.');
+            }
+
+            box.appendChild(inner);
+            return box;
+        }
+
+        function hideError() {
+            errorModal.className = 'modal-overlay';
+            errorModal.setAttribute('aria-hidden', 'true');
+        }
+
+        function reloadPage() {
+            window.location.reload();
+        }
+
+        function resizeCanvas() {
+            var parent;
+            var width;
+            var height;
+
+            if (!canvas) {
+                return;
+            }
+
+            parent = canvas.parentNode;
+            if (!parent) {
+                return;
+            }
+
+            width = parent.clientWidth;
+            height = parent.clientHeight;
+
+            if (!width || !height) {
+                return;
+            }
+
+            if (canvas.width !== width) {
+                canvas.width = width;
+            }
+
+            if (canvas.height !== height) {
+                canvas.height = height;
+            }
+        }
+
+        function drawCanvasFrame() {
+            var ctx;
+            var width;
+            var height;
+            var gradient;
+            var i;
+            var barCount;
+            var barWidth;
+            var baseY;
+            var amplitude;
+            var barHeight;
+            var x;
+            var colors;
+
+            if (!canvasContext || !canvas) {
+                return;
+            }
+
+            ctx = canvasContext;
+            width = canvas.width;
+            height = canvas.height;
+
+            if (!width || !height) {
+                return;
+            }
+
+            gradient = ctx.createLinearGradient(0, 0, width, height);
+            gradient.addColorStop(0, '#09111f');
+            gradient.addColorStop(1, '#111827');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.16)';
+            ctx.beginPath();
+            ctx.arc(width * 0.78, height * 0.24, height * 0.18, 0, Math.PI * 2, false);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+            ctx.beginPath();
+            ctx.arc(width * 0.16, height * 0.74, height * 0.22, 0, Math.PI * 2, false);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+            ctx.fillRect(0, height * 0.7, width, 2);
+
+            colors = ['#31c48d', '#f59e0b', '#60a5fa', '#f472b6', '#fde047', '#a78bfa'];
+            barCount = 8;
+            barWidth = width / 18;
+            baseY = height * 0.78;
+
+            for (i = 0; i < barCount; i += 1) {
+                amplitude = Math.abs(Math.sin((frame / 10) + (i * 0.7)));
+                barHeight = height * 0.12 + amplitude * height * 0.3;
+                x = ((i + 1) * width / (barCount + 1)) - (barWidth / 2);
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fillRect(x, baseY - barHeight, barWidth, barHeight);
+            }
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(8, 8, width - 16, height - 16);
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold ' + Math.max(20, Math.floor(height * 0.07)) + 'px Arial';
+            ctx.fillText('LIVE LOOP ES5', width / 2, height * 0.16);
+
+            ctx.fillStyle = '#d7e4ff';
+            ctx.font = Math.max(14, Math.floor(height * 0.028)) + 'px Arial';
+            ctx.fillText('Local animation generated with plain JavaScript', width / 2, height * 0.22);
+
+            ctx.fillStyle = '#8db8ff';
+            ctx.font = 'bold ' + Math.max(14, Math.floor(height * 0.024)) + 'px Arial';
+            ctx.fillText('No external media, no iframe, no modern syntax', width / 2, height * 0.9);
+        }
+
+        function startCanvas() {
+            if (!canvas || !canvas.getContext) {
+                if (canvasFallback) {
+                    canvasFallback.style.display = 'block';
+                }
+                return;
+            }
+
+            canvasContext = canvas.getContext('2d');
+
+            if (!canvasContext) {
+                if (canvasFallback) {
+                    canvasFallback.style.display = 'block';
+                }
+                return;
+            }
+
+            resizeCanvas();
+            drawCanvasFrame();
+
+            canvasTimer = window.setInterval(function() {
+                resizeCanvas();
+                drawCanvasFrame();
+                frame += 1;
+            }, 33);
+        }
+
+        function measureTicker() {
+            if (!tickerSpan || !footerTrack || !footerTrack.parentNode) {
+                return;
+            }
+
+            tickerView = footerTrack.parentNode.clientWidth;
+            tickerWidth = tickerSpan.offsetWidth;
+
+            if (!tickerView) {
+                tickerView = 0;
+            }
+
+            if (!tickerWidth) {
+                tickerWidth = 0;
+            }
+
+            if (!tickerX || tickerX > tickerView) {
+                tickerX = tickerView;
+            }
+
+            tickerSpan.style.left = tickerX + 'px';
+        }
+
+        function startTicker() {
+            var tickerText;
+
+            if (!footerTrack) {
+                return;
+            }
+
+            clearNode(footerTrack);
+
+            tickerSpan = document.createElement('span');
+            tickerText = '+++ Local ES5 content ready for Chrome 25. No iframe, no remote video, no remote image. +++';
+            tickerSpan.appendChild(document.createTextNode(tickerText));
+            tickerSpan.style.position = 'absolute';
+            tickerSpan.style.left = '0';
+            tickerSpan.style.top = '0';
+            footerTrack.appendChild(tickerSpan);
+
+            tickerX = footerTrack.parentNode.clientWidth;
+            tickerSpan.style.left = tickerX + 'px';
+            measureTicker();
+
+            if (tickerTimer) {
+                window.clearInterval(tickerTimer);
+            }
+
+            tickerTimer = window.setInterval(function() {
+                tickerX -= 2;
+                if (tickerX < -tickerWidth) {
+                    tickerX = tickerView;
+                }
+                tickerSpan.style.left = tickerX + 'px';
+            }, 30);
+        }
+
+        function buildPoster() {
+            var posterUrl;
+
+            if (!posterImage) {
+                return;
+            }
+
+            posterUrl = createPosterDataUrl();
+            posterImage.onerror = function() {
+                showError('Image Error: the local SVG poster could not be rendered.');
+            };
+            posterImage.src = posterUrl;
+        }
+
+        function buildImagePanel(panel, urls) {
+            var fallbackUrl;
+            var img;
+            var imageUrls;
+            var currentIndex;
+
+            if (!panel) {
+                return;
+            }
+
+            clearNode(panel);
+
+            img = document.createElement('img');
+            img.alt = 'Remote image';
+            img.style.position = 'absolute';
+            img.style.top = '0';
+            img.style.left = '0';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.display = 'block';
+            img.style.border = '0';
+            img.src = createPosterDataUrl();
+
+            img.onload = function() {
+                if (currentIndex > 0) {
+                    return;
+                }
+            };
+
+            img.onerror = function() {
+                if (currentIndex + 1 < imageUrls.length) {
+                    currentIndex += 1;
+                    img.src = imageUrls[currentIndex];
+                    return;
+                }
+
+                img.src = fallbackUrl;
+                showError('Image Error: the remote image could not be loaded.');
+            };
+
+            if (typeof urls === 'string') {
+                imageUrls = [urls];
+            } else if (urls && typeof urls.length === 'number') {
+                imageUrls = urls.slice ? urls.slice(0) : urls;
+            } else {
+                imageUrls = [];
+            }
+
+            panel.appendChild(img);
+
+            fallbackUrl = createPosterDataUrl();
+            currentIndex = 0;
+
+            if (imageUrls.length) {
+                img.src = imageUrls[0];
+            } else {
+                img.src = fallbackUrl;
+            }
+        }
+
+        function buildVideoPanel(panel, url) {
+            var video;
+            var source;
+            var fallback;
+
+            if (!panel) {
+                return;
+            }
+
+            clearNode(panel);
+
+            fallback = createLocalFallbackMessage(
+                'Video loading...',
+                'Trying to load the remote video. If it fails, this fallback stays visible.'
+            );
+            panel.appendChild(fallback);
+
+            video = document.createElement('video');
+            video.autoplay = true;
+            video.muted = true;
+            video.loop = true;
+            video.setAttribute('autoplay', 'autoplay');
+            video.setAttribute('muted', 'muted');
+            video.setAttribute('loop', 'loop');
+            video.setAttribute('playsinline', 'playsinline');
+            video.setAttribute('webkit-playsinline', 'webkit-playsinline');
+            video.setAttribute('preload', 'auto');
+
+            video.style.position = 'absolute';
+            video.style.top = '0';
+            video.style.left = '0';
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.display = 'none';
+            video.style.background = '#111';
+
+            source = document.createElement('source');
+            source.src = url;
+            source.type = 'video/mp4';
+            video.appendChild(source);
+
+            video.onloadedmetadata = function() {
+                fitVideoToPanel(video, panel);
+            };
+
+            video.onloadeddata = function() {
+                fallback.style.display = 'none';
+                video.style.display = 'block';
+                fitVideoToPanel(video, panel);
+            };
+
+            video.onerror = function() {
+                fallback.style.display = 'block';
+                showError('Video Error: the remote video could not be loaded.\nURL: ' + url);
+            };
+
+            panel.appendChild(video);
+
+            if (video.load) {
+                video.load();
+            }
+
+            activeVideo = video;
+            activeVideoPanel = panel;
+        }
+
+        function fitVideoToPanel(video, panel) {
+            var panelWidth;
+            var panelHeight;
+            var videoWidth;
+            var videoHeight;
+            var newWidth;
+            var newHeight;
+            var leftOffset;
+
+            if (!video || !panel) {
+                return;
+            }
+
+            panelWidth = panel.clientWidth;
+            panelHeight = panel.clientHeight;
+            videoWidth = video.videoWidth || 16;
+            videoHeight = video.videoHeight || 9;
+
+            if (!panelWidth || !panelHeight || !videoWidth || !videoHeight) {
+                return;
+            }
+
+            newHeight = panelHeight;
+            newWidth = Math.round((panelHeight * videoWidth) / videoHeight);
+            leftOffset = Math.round((panelWidth - newWidth) / 2);
+
+            video.style.width = newWidth + 'px';
+            video.style.height = newHeight + 'px';
+            video.style.left = leftOffset + 'px';
+            video.style.top = '0';
+        }
+
+        function buildIframePanel(panel, url) {
+            var iframe;
+            var fallback;
+
+            if (!panel) {
+                return;
+            }
+
+            clearNode(panel);
+
+            fallback = createLocalFallbackMessage(
+                'Wikipedia loading...',
+                'The page may still show a browser warning because Wikipedia is cross-origin.'
+            );
+            panel.appendChild(fallback);
+
+            iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.setAttribute('title', 'Embedded Wikipedia');
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('scrolling', 'no');
+            iframe.setAttribute('referrerpolicy', 'no-referrer');
+
+            iframe.style.position = 'absolute';
+            iframe.style.top = '0';
+            iframe.style.left = '0';
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = '0';
+
+            iframe.onload = function() {
+                fallback.style.display = 'none';
+            };
+
+            iframe.onerror = function() {
+                fallback.style.display = 'block';
+                showError('Iframe Error: the Wikipedia page could not be loaded.');
+            };
+
+            panel.appendChild(iframe);
+        }
+
+        function initialize() {
+            startTicker();
+        }
+
+        window.onerror = function(message, source, lineNumber, columnNumber, error) {
+            showDetailedError('Global Error', message, source, lineNumber, columnNumber, error);
             return true;
         };
 
-        function showError(msg) {
-            errorDisplay.style.display = 'block';
-            errorMsg.innerText = msg;
+        if (window.addEventListener) {
+            window.addEventListener('error', function(event) {
+                var target;
+                var tagName;
+                var resourceUrl;
+
+                target = event ? event.target : null;
+                if (!target || target === window) {
+                    return;
+                }
+
+                tagName = target.tagName ? target.tagName.toUpperCase() : '';
+                resourceUrl = target.src || target.href || '';
+
+                if (tagName === 'IMG') {
+                    showError('Image load error:\n' + resourceUrl);
+                } else if (tagName === 'VIDEO') {
+                    showError('Video load error:\n' + resourceUrl);
+                }
+            }, true);
         }
 
-        // 1. Simulate the data coming from server
-        var serverData = {
-            layoutType: "TRIPLE_SPLIT_WITH_FOOTER",
-            components: {
-                leftCol: {
-                    type: "iframe",
-                    url: "https://www.wikipedia.org"
-                },
-                midCol: {
-                    type: "video",
-                    url: "https://www.w3schools.com/html/mov_bbb.mp4"
-                },
-                rightCol: {
-                    type: "image",
-                    url: "https://picsum.photos/1080/1920?random=1"
-                },
-                footer: {
-                    msg: "+++ Lorem ipsum dolor sit amet, consectetur adipiscing elit. This is your TV Engine test +++ ",
-                    speed: "20s"
+        if (errorClose) {
+            errorClose.onclick = function() {
+                hideError();
+            };
+        }
+
+        if (errorReload) {
+            errorReload.onclick = function() {
+                reloadPage();
+            };
+        }
+
+        if (errorModal) {
+            errorModal.onclick = function(event) {
+                if (event && event.target === errorModal) {
+                    hideError();
                 }
+            };
+        }
+
+        document.onkeydown = function(event) {
+            event = event || window.event;
+            if (event && event.keyCode === 27) {
+                hideError();
             }
         };
 
-        function renderLayout(data) {
-          try {
-            var root = document.getElementById('screen-root');
-
-            if (data.layoutType === "TRIPLE_SPLIT_WITH_FOOTER") {
-                root.innerHTML = '<div class="main-split">' +
-                        '<div class="pane">' +
-                            '<iframe src="' + data.components.leftCol.url + '"></iframe>' +
-                        '</div>' +
-
-                        '<div class="pane">' +
-                            '<video autoplay muted loop playsinline>' +
-                                '<source src="' + data.components.midCol.url + '" type="video/mp4">' +
-                                'Your browser does not support the video tag.' +
-                            '</video>' +
-                        '</div>' +
-
-                        '<div class="pane">' +
-                            '<img src="' +  data.components.rightCol.url + '">' +
-                        '</div>' +
-                    '</div>' +
-
-                    '<div class="footer-ticker">' +
-                        '<div class="ticker-content" style="animation-duration: ' + data.components.footer.speed + '">' +
-                            data.components.footer.msg +
-                        '</div>' +
-                    '</div>'
-                ;
+        window.onresize = function() {
+            measureTicker();
+            if (activeVideo && activeVideoPanel) {
+                fitVideoToPanel(activeVideo, activeVideoPanel);
             }
-          } catch (err) {
-            showError("Render Error: " + err.message);
-          }
-        }
+        };
 
-        renderLayout(serverData);
+        buildIframePanel(getFirstByClass('left-panel'), 'https://www.wikipedia.org');
+        buildVideoPanel(getFirstByClass('center-panel'), 'https://www.w3schools.com/html/mov_bbb.mp4');
+        buildImagePanel(getFirstByClass('right-panel'), [
+            'https://picsum.photos/1080/1920?random=11',
+            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1080&q=80',
+            'https://dummyimage.com/1080x1920/1d2a38/ffffff.png&text=TV+Image'
+        ]);
+
+        initialize();
     </script>
 </body>
 </html>

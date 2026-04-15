@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TV Signage Engine</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
+        
+        /* Layout Containers */
+        #screen-root { 
+            width: 100%; 
+            height: 100%; 
+        }
+
+
+        /* The Error Overlay: Hidden by default */
+        #error-display {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(200, 0, 0, 0.9);
+            color: white;
+            padding: 40px;
+            z-index: 9999;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        /* Each pane takes 1/3 of the space */
+        .pane { 
+            float: left; 
+            width: 33.33%; 
+            height: 100%; 
+            box-sizing: border-box; 
+        }
+        .pane:last-child { border-right: none; }
+
+        /* Content scaling */
+        iframe, img, video { width: 100%; height: 100%; display: block; border: none; }
+        img, video { object-fit: cover; } /* Ensures video fills the column without black bars */
+
+        .main-split { 
+            width: 100%; 
+            height: 90%; /* Leave room for footer */
+        }
+        .left-pane { flex: 1; font-size: 1.5rem; line-height: 1.6; background: white; height: 100%; }
+        .left-pane iframe { width: 100%; height: 100%; border: none; }
+        .right-pane { width: 100%; height: 100%; flex: 1; }
+        .right-pane img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Looping Ticker Footer */
+        .footer-ticker { 
+            clear: both; /* Stop the floats */
+            width: 100%; 
+            height: 60px; 
+        }
+
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%; /* Start the text off-screen to the right */
+            animation: ticker-loop linear infinite;
+        }
+
+        @keyframes ticker-loop {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="error-display">
+        <h1>⚠️ TV Engine Error</h1>
+        <p id="error-msg" style="font-family: monospace; font-size: 1.5rem; background: #300; padding: 20px;"></p>
+        <button onclick="location.reload()" style="padding: 15px; font-size: 1.2rem;">Reload Page</button>
+    </div>
+
+    <div id="screen-root"></div>
+
+    <script>
+        var errorDisplay = document.getElementById('error-display');
+        var errorMsg = document.getElementById('error-msg');
+
+        // 1. GLOBAL ERROR CATCHER
+        // This catches syntax errors or failed network requests
+        window.onerror = function(message, source, lineno, colno, error) {
+            showError('Global Error: ' + message + 'at line ' + lineno);
+            return true;
+        };
+
+        function showError(msg) {
+            errorDisplay.style.display = 'block';
+            errorMsg.innerText = msg;
+        }
+
+        // 1. Simulate the data coming from server
+        var serverData = {
+            layoutType: "TRIPLE_SPLIT_WITH_FOOTER",
+            components: {
+                leftCol: {
+                    type: "iframe",
+                    url: "https://www.wikipedia.org"
+                },
+                midCol: {
+                    type: "video",
+                    url: "https://www.w3schools.com/html/mov_bbb.mp4"
+                },
+                rightCol: {
+                    type: "image",
+                    url: "https://picsum.photos/1080/1920?random=1"
+                },
+                footer: {
+                    msg: "+++ Lorem ipsum dolor sit amet, consectetur adipiscing elit. This is your TV Engine test +++ ",
+                    speed: "20s"
+                }
+            }
+        };
+
+        function renderLayout(data) {
+          try {
+            var root = document.getElementById('screen-root');
+
+            if (data.layoutType === "TRIPLE_SPLIT_WITH_FOOTER") {
+                root.innerHTML = '<div class="main-split">' +
+                        '<div class="pane">' +
+                            '<iframe src="' + data.components.leftCol.url + '"></iframe>' +
+                        '</div>' +
+
+                        '<div class="pane">' +
+                            '<video autoplay muted loop playsinline>' +
+                                '<source src="' + data.components.midCol.url + '" type="video/mp4">' +
+                                'Your browser does not support the video tag.' +
+                            '</video>' +
+                        '</div>' +
+
+                        '<div class="pane">' +
+                            '<img src="' +  data.components.rightCol.url + '">' +
+                        '</div>' +
+                    '</div>' +
+
+                    '<div class="footer-ticker">' +
+                        '<div class="ticker-content" style="animation-duration: ' + data.components.footer.speed + '">' +
+                            data.components.footer.msg +
+                        '</div>' +
+                    '</div>'
+                ;
+            }
+          } catch (err) {
+            showError("Render Error: " + err.message);
+          }
+        }
+
+        renderLayout(serverData);
+    </script>
+</body>
+</html>
