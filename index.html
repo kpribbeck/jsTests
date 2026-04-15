@@ -1,3 +1,136 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TV Signage Engine - Debug Mode</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
+        #screen-root { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+        
+        /* The Error Overlay: Hidden by default */
+        #error-display {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(200, 0, 0, 0.9);
+            color: white;
+            padding: 40px;
+            z-index: 9999;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .main-split { display: flex; flex: 1; height: 100%; }
+        .pane { flex: 1; height: 100%; border-right: 1px solid #444; }
+        iframe, img, video { width: 100%; height: 100%; display: block; border: none; object-fit: cover; }
+
+        /* Looping Ticker Footer */
+        .footer-ticker {
+            height: 60px;
+            background: #cc0000;
+            color: white;
+            display: flex;
+            align-items: center;
+            overflow: hidden; /* Hide the text as it leaves the box */
+            white-space: nowrap;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%; /* Start the text off-screen to the right */
+            animation: ticker-loop linear infinite;
+        }
+
+        @keyframes ticker-loop {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="error-display">
+        <h1>⚠️ TV Engine Error</h1>
+        <p id="error-msg" style="font-family: monospace; font-size: 1.5rem; background: #300; padding: 20px;"></p>
+        <button onclick="location.reload()" style="padding: 15px; font-size: 1.2rem;">Reload Page</button>
+    </div>
+
+    <div id="screen-root"></div>
+
+    <script>
+        const errorDisplay = document.getElementById('error-display');
+        const errorMsg = document.getElementById('error-msg');
+
+        // 1. GLOBAL ERROR CATCHER
+        // This catches syntax errors or failed network requests
+        window.onerror = function(message, source, lineno, colno, error) {
+            showError(`Global Error: ${message} at line ${lineno}`);
+            return true;
+        };
+
+        function showError(msg) {
+            errorDisplay.style.display = 'block';
+            errorMsg.innerText = msg;
+        }
+
+        const serverData = {
+            layoutType: "TRIPLE_SPLIT",
+            components: {
+                leftCol: { 
+                  type: "iframe", 
+                  url: "https://www.wikipedia.org" 
+                },
+                midCol: { 
+                  type: "video",
+                   url: "https://www.w3schools.com/html/mov_bbb.mp4"
+                },
+                rightCol: { 
+                  type: "image",
+                  url: "https://picsum.photos/1080/1920"
+                },
+                footer: {
+                    msg: "+++ Lorem ipsum dolor sit amet, consectetur adipiscing elit. This is your TV Engine test +++ ",
+                    speed: "20s"
+                }
+            }
+        };
+
+        function renderLayout(data) {
+            try {
+                const root = document.getElementById('screen-root');
+                
+                // Intentional error simulation check:
+                if (!root) throw new Error("Could not find #screen-root element!");
+
+                root.innerHTML = `
+                    <div class="main-split">
+                        <div class="pane"><iframe src="${data.components.leftCol.url}"></iframe></div>
+                        <div class="pane">
+                            <video autoplay muted loop playsinline>
+                                <source src="${data.components.midCol.url}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="pane"><img src="${data.components.rightCol.url}"></div>
+                    </div>
+                    <div class="footer-ticker">
+                      <div class="ticker-content" style="animation-duration: ${data.components.footer.speed}">
+                          ${data.components.footer.msg}
+                      </div>
+                    </div>
+                `;
+            } catch (err) {
+                showError("Render Error: " + err.message);
+            }
+        }
+
+        // Initialize
+        renderLayout(serverData);
+    </script>
+</body>
+</html> -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +141,19 @@
         
         /* Layout Containers */
         #screen-root { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+        /* The Error Overlay: Hidden by default */
+        #error-display {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(200, 0, 0, 0.9);
+            color: white;
+            padding: 40px;
+            z-index: 9999;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
         
         /* Each pane takes 1/3 of the space */
         .pane { flex: 1; height: 100%; overflow: hidden; border-right: 2px solid #333; }
@@ -50,13 +196,20 @@
 </head>
 <body>
 
-    <div id="screen-root">
-        </div>
+    <div id="error-display">
+        <h1>⚠️ TV Engine Error</h1>
+        <p id="error-msg" style="font-family: monospace; font-size: 1.5rem; background: #300; padding: 20px;"></p>
+        <button onclick="location.reload()" style="padding: 15px; font-size: 1.2rem;">Reload Page</button>
+    </div>
+
+    <div id="screen-root"></div>
 
     <script>
+        alert("JS is running on this TV!");
+
         // 1. Simulate the data coming from server
         const serverData = {
-            layoutType: "TRIPLE_SPLIT",
+            layoutType: "TRIPLE_SPLIT_WITH_FOOTER",
             components: {
                 leftCol: {
                     type: "iframe",
@@ -80,7 +233,7 @@
         function renderLayout(data) {
             const root = document.getElementById('screen-root');
 
-            if (data.layoutType === "TRIPLE_SPLIT") {
+            if (data.layoutType === "TRIPLE_SPLIT_WITH_FOOTER") {
                 root.innerHTML = `
                     <div class="main-split">
                         <div class="pane">
@@ -108,44 +261,6 @@
             }
         }
 
-        // const serverData = {
-        //     layoutType: "VERTICAL_SPLIT_WITH_TICKER",
-        //     components: {
-        //         mainContent: {
-        //             externalUrl: "https://www.wikipedia.org",
-        //             imageUrl: "https://picsum.photos/1080/1920"
-        //         },
-        //         footer: {
-        //             msg: "+++ Lorem ipsum dolor sit amet, consectetur adipiscing elit. This is your TV Engine test +++ ",
-        //             speed: "20s"
-        //         }
-        //     }
-        // };
-
-        // // 2. The Rendering Engine
-        // function renderLayout(data) {
-        //     const root = document.getElementById('screen-root');
-
-        //     if (data.layoutType === "VERTICAL_SPLIT_WITH_TICKER") {
-        //         root.innerHTML = `
-        //             <div class="main-split">
-        //                 <div class="left-pane">
-        //                   <iframe src="${data.components.mainContent.externalUrl}"></iframe>
-        //                 </div>
-        //                 <div class="right-pane">
-        //                     <img src="${data.components.mainContent.imageUrl}">
-        //                 </div>
-        //             </div>
-        //             <div class="footer-ticker">
-        //                 <div class="ticker-content" style="animation-duration: ${data.components.footer.speed}">
-        //                     ${data.components.footer.msg}
-        //                 </div>
-        //             </div>
-        //         `;
-        //     }
-        // }
-
-        // Initialize the "simulation"
         renderLayout(serverData);
     </script>
 </body>
