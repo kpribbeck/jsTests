@@ -205,8 +205,8 @@
     <div id="screen-root"></div>
 
     <script>
-        const errorDisplay = document.getElementById('error-display');
-        const errorMsg = document.getElementById('error-msg');
+        var errorDisplay = document.getElementById('error-display');
+        var errorMsg = document.getElementById('error-msg');
 
         // 1. GLOBAL ERROR CATCHER
         // This catches syntax errors or failed network requests
@@ -221,7 +221,7 @@
         }
 
         // 1. Simulate the data coming from server
-        const serverData = {
+        var serverData = {
             layoutType: "TRIPLE_SPLIT_WITH_FOOTER",
             components: {
                 leftCol: {
@@ -245,7 +245,7 @@
 
         function renderLayout(data) {
           try {
-            const root = document.getElementById('screen-root');
+            var root = document.getElementById('screen-root');
 
             if (data.layoutType === "TRIPLE_SPLIT_WITH_FOOTER") {
                 root.innerHTML = '<div class="main-split">' +
