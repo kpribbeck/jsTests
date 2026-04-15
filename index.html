@@ -205,8 +205,6 @@
     <div id="screen-root"></div>
 
     <script>
-        alert("JS is running on this TV!");
-
         // 1. Simulate the data coming from server
         const serverData = {
             layoutType: "TRIPLE_SPLIT_WITH_FOOTER",
@@ -231,34 +229,37 @@
         };
 
         function renderLayout(data) {
+          try {
             const root = document.getElementById('screen-root');
 
             if (data.layoutType === "TRIPLE_SPLIT_WITH_FOOTER") {
-                root.innerHTML = `
-                    <div class="main-split">
-                        <div class="pane">
-                            <iframe src="${data.components.leftCol.url}"></iframe>
-                        </div>
+                root.innerHTML = '<div class="main-split">' +
+                        '<div class="pane">' +
+                            '<iframe src="' + data.components.leftCol.url + '"></iframe>' +
+                        '</div>' +
 
-                        <div class="pane">
-                            <video autoplay muted loop playsinline>
-                                <source src="${data.components.midCol.url}" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
+                        '<div class="pane">' +
+                            '<video autoplay muted loop playsinline>' +
+                                '<source src="' + data.components.midCol.url + '" type="video/mp4">' +
+                                'Your browser does not support the video tag.' +
+                            '</video>' +
+                        '</div>' +
 
-                        <div class="pane">
-                            <img src="${data.components.rightCol.url}">
-                        </div>
-                    </div>
+                        '<div class="pane">' +
+                            '<img src="' +  data.components.rightCol.url + '">' +
+                        '</div>' +
+                    '</div>' +
 
-                    <div class="footer-ticker">
-                        <div class="ticker-content" style="animation-duration: ${data.components.footer.speed}">
-                            ${data.components.footer.msg}
-                        </div>
-                    </div>
-                `;
+                    '<div class="footer-ticker">' +
+                        '<div class="ticker-content" style="animation-duration: ' + data.components.footer.speed + '">' +
+                            data.components.footer.msg +
+                        '</div>' +
+                    '</div>'
+                ;
             }
+          } catch (err) {
+            showError("Render Error: " + err.message);
+          }
         }
 
         renderLayout(serverData);
