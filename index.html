@@ -205,6 +205,21 @@
     <div id="screen-root"></div>
 
     <script>
+        const errorDisplay = document.getElementById('error-display');
+        const errorMsg = document.getElementById('error-msg');
+
+        // 1. GLOBAL ERROR CATCHER
+        // This catches syntax errors or failed network requests
+        window.onerror = function(message, source, lineno, colno, error) {
+            showError('Global Error: ' + message + 'at line ' + lineno);
+            return true;
+        };
+
+        function showError(msg) {
+            errorDisplay.style.display = 'block';
+            errorMsg.innerText = msg;
+        }
+
         // 1. Simulate the data coming from server
         const serverData = {
             layoutType: "TRIPLE_SPLIT_WITH_FOOTER",
