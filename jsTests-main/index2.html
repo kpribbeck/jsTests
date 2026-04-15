@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vista Tres Columnas</title>
+    <link rel="stylesheet" href="templates.css">
+</head>
+<body>
+    <div class="page">
+        <div class="frame">
+            <div class="bar"></div>
+            <div class="surface clearfix">
+                <section class="col w33 bg-ink pad">
+                    <span class="kicker">Media</span>
+                    <h1 class="title-sm">Editorial feed</h1>
+                    <p class="copy">A compact column for a live web page preview and a short editorial note.</p>
+
+                    <div class="media-box medium">
+                        <iframe src="https://www.wikipedia.org" title="Wikipedia preview" frameborder="0" scrolling="no"></iframe>
+                    </div>
+
+                    <div class="card">
+                        <p class="copy-sm">Use this slot when you need a URL preview, a reference page or a portal-style web embed.</p>
+                    </div>
+                </section>
+
+                <section class="col w33 bg-blue pad">
+                    <span class="kicker">Video</span>
+                    <h2 class="section-title">Playback window</h2>
+
+                    <div class="media-box medium">
+                        <video controls preload="metadata" src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+                    </div>
+
+                    <div class="card card-light">
+                        <h3 class="section-title">What it shows</h3>
+                        <ul class="list">
+                            <li>Video slot for trailers, promos or clips.</li>
+                            <li>Simple HTML5 playback with native controls.</li>
+                            <li>No JavaScript required for the template itself.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="col w33 bg-green pad">
+                    <span class="kicker">Image</span>
+                    <h2 class="section-title">Visual slot</h2>
+
+                    <div class="media-box medium">
+                        <img src="https://picsum.photos/960/720?random=31" alt="Sample image">
+                    </div>
+
+                    <div class="card">
+                        <p class="copy-sm">This panel works as an image placeholder with a couple of useful URL references below.</p>
+                    </div>
+
+                    <ul class="url-list">
+                        <li><a href="https://www.wikipedia.org">https://www.wikipedia.org</a><span>URL preview source</span></li>
+                        <li><a href="https://www.w3schools.com/html/">https://www.w3schools.com/html/</a><span>HTML reference</span></li>
+                        <li><a href="https://picsum.photos/">https://picsum.photos/</a><span>Image source</span></li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="footer">+++ Three column view with URL, video and image +++</div>
+        </div>
+    </div>
+</body>
+</html>
