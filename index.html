@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <title>TV Signage Engine</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: sans-serif; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
         
         /* Layout Containers */
-        #screen-root { display: flex; flex-direction: column; height: 100vh; }
+        #screen-root { display: flex; flex-direction: column; height: 100vh; width: 100vh; }
         
-        .main-split { display: flex; flex: 1; overflow: hidden; }
-        .left-pane { flex: 1; font-size: 1.5rem; line-height: 1.6; background: white; }
+        .main-split { display: flex; flex: 1; overflow: hidden; height: 100%; }
+        .left-pane { flex: 1; font-size: 1.5rem; line-height: 1.6; background: white; height: 100%; }
         .left-pane iframe { width: 100%; height: 100%; border: none; }
         .right-pane { flex: 1; }
         .right-pane img { width: 100%; height: 100%; object-fit: cover; }
@@ -55,7 +55,7 @@
                     imageUrl: "https://picsum.photos/1080/1920"
                 },
                 footer: {
-                    msg: "+++ LIVE UPDATES FROM THE BACKEND +++ MONGODB CONNECTED +++ NEW SYSTEM ONLINE +++ ",
+                    msg: "+++ Lorem ipsum dolor sit amet, consectetur adipiscing elit. This is your TV Engine test +++ ",
                     speed: "20s"
                 }
             }
