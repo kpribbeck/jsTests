@@ -55,26 +55,28 @@
             width: 100%; 
             height: 60px;
             background: red; /* Dark background */
-            color: black;     /* Bright text */
-            font-size: 1.2rem;
+            color: white;     /* Bright text */
+            font-size: 1.5rem;
             line-height: 60px; /* Center text vertically */
             overflow: hidden;  /* Prevent overflow */
+            position: relative; /* Better for older positioning engines */
         }
 
         .ticker-content {
             display: inline-block;
-            padding-left: 100%;
             white-space: nowrap;  /* Prevents wrapping - key fix */
-            -webkit-animation: ticker-loop linear infinite;
-            animation: ticker-loop linear infinite;
+            position: absolute; /* More reliable than inline-block padding on old TVs */
+
+            -webkit-animation: ticker-loop 20s linear infinite;
+            animation: ticker-loop 20s linear infinite;
         }
         
         @-webkit-keyframes ticker-loop {
-            0% { -webkit-transform: translate(0, 0); }
+            0% { -webkit-transform: translate(100vw, 0); }
             100% { -webkit-transform: translate(-100%, 0); }
         }
         @keyframes ticker-loop {
-            0% { transform: translate(0, 0); }
+            0% { transform: translate(100vw, 0); }
             100% { transform: translate(-100%, 0); }
         }
 
