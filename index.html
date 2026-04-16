@@ -50,22 +50,34 @@
         .right-pane img { width: 100%; height: 100%; object-fit: cover; }
 
         /* Looping Ticker Footer */
-        .footer-ticker { 
+        .footer-ticker {
             clear: both; /* Stop the floats */
             width: 100%; 
-            height: 60px; 
+            height: 60px;
+            background: black; /* Dark background */
+            color: yellow;     /* Bright text */
+            font-size: 1.2rem;
+            line-height: 60px; /* Center text vertically */
+            overflow: hidden;  /* Prevent overflow */
         }
 
         .ticker-content {
             display: inline-block;
-            padding-left: 100%; /* Start the text off-screen to the right */
+            padding-left: 100%;
+            white-space: nowrap;  /* Prevents wrapping - key fix */
+            -webkit-animation: ticker-loop linear infinite;
             animation: ticker-loop linear infinite;
         }
-
+        
+        @-webkit-keyframes ticker-loop {
+            0% { -webkit-transform: translate(0, 0); }
+            100% { -webkit-transform: translate(-100%, 0); }
+        }
         @keyframes ticker-loop {
             0% { transform: translate(0, 0); }
             100% { transform: translate(-100%, 0); }
         }
+
     </style>
 </head>
 <body>
@@ -140,13 +152,13 @@
                         '<div class="pane">' +
                             '<img src="' +  data.components.rightCol.url + '">' +
                         '</div>' +
-                    '</div>' // +
+                    '</div>' +
 
-                    // '<div class="footer-ticker">' +
-                    //     '<div class="ticker-content" style="animation-duration: ' + data.components.footer.speed + '">' +
-                    //         data.components.footer.msg +
-                    //     '</div>' +
-                    // '</div>'
+                    '<div class="footer-ticker">' +
+                        '<div class="ticker-content" style="animation-duration: ' + data.components.footer.speed + '">' +
+                            data.components.footer.msg +
+                        '</div>' +
+                    '</div>'
                 ;
             }
           } catch (err) {
@@ -155,13 +167,6 @@
         }
 
         renderLayout(serverData);
-
-        // setTimeout(function() {
-        //     var iframe = document.getElementById('my-iframe-test');
-        //     if (iframe) {
-        //         iframe.src = serverData.components.leftCol.url;
-        //     }
-        // }, 2000);
     </script>
 </body>
 </html>
