@@ -69,29 +69,29 @@
 </head>
 <body>
 
-    <div id="error-display">
+    <!-- <div id="error-display">
         <h1>⚠️ TV Engine Error</h1>
         <p id="error-msg" style="font-family: monospace; font-size: 1.5rem; background: #300; padding: 20px;"></p>
         <button onclick="location.reload()" style="padding: 15px; font-size: 1.2rem;">Reload Page</button>
-    </div>
+    </div> -->
 
     <div id="screen-root"></div>
 
     <script>
-        var errorDisplay = document.getElementById('error-display');
-        var errorMsg = document.getElementById('error-msg');
+        // var errorDisplay = document.getElementById('error-display');
+        // var errorMsg = document.getElementById('error-msg');
 
-        // 1. GLOBAL ERROR CATCHER
-        // This catches syntax errors or failed network requests
-        window.onerror = function(message, source, lineno, colno, error) {
-            showError('Global Error: ' + message + 'at line ' + lineno);
-            return true;
-        };
+        // // 1. GLOBAL ERROR CATCHER
+        // // This catches syntax errors or failed network requests
+        // window.onerror = function(message, source, lineno, colno, error) {
+        //     showError('Global Error: ' + message + 'at line ' + lineno);
+        //     return true;
+        // };
 
-        function showError(msg) {
-            errorDisplay.style.display = 'block';
-            errorMsg.innerText = msg;
-        }
+        // function showError(msg) {
+        //     errorDisplay.style.display = 'block';
+        //     errorMsg.innerText = msg;
+        // }
 
         // 1. Simulate the data coming from server
         var serverData = {
@@ -123,7 +123,7 @@
             if (data.layoutType === "TRIPLE_SPLIT_WITH_FOOTER") {
                 root.innerHTML = '<div class="main-split">' +
                         '<div class="pane">' +
-                            '<iframe src="' + data.components.leftCol.url + '"></iframe>' +
+                            '<iframe id="my-iframe-test"></iframe>' +
                         '</div>' +
 
                         // '<div class="pane">' +
@@ -151,6 +151,13 @@
         }
 
         renderLayout(serverData);
+
+        setTimeout(function() {
+            var iframe = document.getElementById('my-iframe-test');
+            if (iframe) {
+                iframe.src = serverData.components.leftCol.url;
+            }
+        }, 2000);
     </script>
 </body>
 </html>
